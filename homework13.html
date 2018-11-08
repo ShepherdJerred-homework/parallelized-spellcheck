@@ -1,0 +1,102 @@
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Comp 425 Homework</title>
+    <link rel="stylesheet" href="../standard.css" type="text/css"/>
+    <script type="text/javascript" src="/gfoust/sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="/gfoust/sh/scripts/shBrushCpp.js"></script>
+    <script type="text/javascript">
+      SyntaxHighlighter.defaults.gutter = false;
+      SyntaxHighlighter.all();
+    </script>
+    <link type="text/css" rel="stylesheet" href="/gfoust/sh/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="/gfoust/sh/styles/shThemeFoust.css"/>
+    <base target="_top"/>
+    <style>
+      ol > li { margin-bottom: 4em; }
+      ol ol > li { margin-bottom: 0em; margin-top: 0.5em; }
+      ol { list-style-type: decimal; }
+      ol ol { list-style-type: lower-alpha; }
+    </style>
+  </head>
+  <body>
+    <ol>
+      <li>
+        Examine the following C++ subroutine:
+        <pre class="brush:cpp">
+          void count(int from, int to) {
+              for (int i = from; i &lt; to; ++i) {
+                  std::cout &lt;&lt; "Thread " &lt;&lt; std::this_thread::get_id() &lt;&lt; ": "
+                            &lt;&lt; "my number is " &lt;&lt; i &lt;&lt; ".\n";
+              }
+          }
+        </pre>
+        Create a program which creates three separate threads using this
+        subroutine:  1 to count from 1000 to 2000, one from 2000 to 3000, and
+        one from 3000 to 4000.  You should see the output jumbled up a bit
+        (much more so on Unix systems than on Windows).
+        <p>
+          Now add a <code>mutex</code> and a <code>lock_guard</code> to use
+          for <code>cout</code> so that each line of the output is guaranteed
+          to be uninterrupted.  The lines themselves should still be jumbled
+          up (much more so on Unix systems than on Windows).
+        </p>
+        <p>
+          <em>Challenge:</em> create an RAII approach for output that will
+          automatically lock and unlock a single output statement.  For
+          example, your approach might look like the following code.  It
+          should lock and unlock each output statement.
+        </p>
+        <pre class="mid brush:cpp">
+          locked(cout) &lt;&lt; "Hello from thread " &lt;&lt; this_thread::get_id() &lt;&lt; "!\n";
+          locked(cout) &lt;&lt; "My count is currently " &lt;&lt; i &lt;&lt; ".\n";
+        </pre>
+      </li>
+      <li>
+        Write a program which compares user input to a large list of English
+        words to decide if the input is spelled correctly.  Your program
+        should take a list of words to use as a command line argument.  This
+        file should just have one word per line.  I suggest you use the
+        file <a href="wordlist.txt">wordlist.txt</a> as your word list.
+        <p>
+          After you have read in the wordlist, begin accepting input
+          from <code>cin</code>.  You program should accept three different
+          commands.  Each command should be executed on its own thread in
+          order to remain responsive (so that the main thread is always
+          reading input from <code>cin</code>).  The commands are:
+        </p>
+        <ul>
+          <li>
+            The string <code>"end"</code> should exit the program immediately;
+            you do not have to wait for other threads to finish.
+          </li>
+          <li>
+            If the string begins with "add ", then take the remainder of the
+            string as a word.  Add it to the word list if it is not there
+            already.
+          </li>
+          <li>
+            Otherwise, you should take the entire string and try to find it in
+            the word list
+            <ul>
+              <li>Compare the string against every word in the word list
+                using a linear search.</li>
+              <li>
+                If you find a match, print <code>"word" is correct</code>,
+                where <var>word</var> is the word entered
+              </li>
+              <li>
+                If you do not find a match, print "<var>word</var> is
+                incorrect", where <var>word</var> is the word entered.
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <p>
+          Use a shared mutex to protect all accesses to the word list.
+          Spellcheck threads should be allowed to run in parallel.
+        </p>
+      </li>
+    </ol>
+  </body>
+</html>
